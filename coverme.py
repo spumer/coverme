@@ -41,9 +41,12 @@ def register_archive_extension(archive_type, ext):
 
 class Backup(object):
     def __init__(self, **settings):
+        vaults = settings.get('vaults')
+        vaults = self._new_vaults(vaults) if vaults else {}
+
         self.defaults = settings.get('defaults', {})
         self.sources = self._new_sources(settings['backups'])
-        self.vaults = self._new_vaults(settings['vaults'])
+        self.vaults = vaults
 
     @classmethod
     def create_with_config(cls, path=None, stream=None, file_format=None):
@@ -98,8 +101,6 @@ class Backup(object):
         errors = {}
         if not settings.get('backups'):
             errors['backups'] = "Section `backups` is empty"
-        if not settings.get('vaults'):
-            errors['vaults'] = "Section `vaults` is empty"
         return errors
 
     def run(self):
